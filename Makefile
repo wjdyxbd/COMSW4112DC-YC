@@ -1,4 +1,4 @@
-GCC = GCC
+GCC = "gcc"
 CFLAGS = -g -Wall
 
 default: build

@@ -278,8 +278,8 @@ int main(int argc, const char* argv[]) {
     int rangeIds[p];
     int first, last, middle, pVal, curLevel, curFanout, prevLoc, range; 
     int32_t * curArr;   
-
-    for(int i =0; i<p; i++){
+    int i;
+    for(i =0; i<p; i++){
         pVal = probes[i];
         curLevel = 0;
         prevLoc = 0;
@@ -331,7 +331,7 @@ int main(int argc, const char* argv[]) {
     }
 
     //phase 3, write to stdout
-    for (int i=0; i<p; i++){
+    for (i=0; i<p; i++){
         fprintf(stdout, "%d %d\n", i, rangeIds[i]);
     }
 
