@@ -168,16 +168,6 @@ int main(int argc, const char* argv[]) {
     //generate probes
     int32_t *probes = generate_sorted_unique(p, gen);
     free(gen);
-
-    printf("Key Values\n");
-    for (int i =0; i<k; i++){
-        printf("%d\n", delimiters[i]);
-    }
-
-    printf("Probe Values\n");
-    for (int i =0; i<p; i++){
-        printf("%d\n", probes[i]);
-    }
     
     int tempCounter[levels]; //determine wheather a node is filled
     int levelCounter[levels]; //record number of delimiters for each level, posix_memalign takes it as indicator of space of relocating
@@ -269,48 +259,82 @@ int main(int argc, const char* argv[]) {
         }
     }
 
-    //print the tree
-    fprintf(stdout, "Generated tree\n");
-    for (counter = 0 ; counter < levels ; counter++){
-        fprintf(stdout,"level %d : ", counter);
-        for (counter2 = 0 ; counter2 < levelCounter[counter] ; counter2++){
-            fprintf(stdout, "%d ",((int32_t *)tree[counter])[counter2]);
+    // //testing print tree
+    // fprintf(stdout, "Generated tree\n");
+    // for (int i = 0 ; i < levels ; i++){
+    //     fprintf(stdout,"level %d : ", i);
+    //     for (int j = 0 ; j < levelCounter[i] ; j++){
+    //         fprintf(stdout, "%d ",((int32_t *)tree[i])[j]);
+    //     }
+    //     fprintf(stdout, "\n");
+    // }
+    // //testing probes
+    // for(int i = 0; i<p; i++){
+    //     fprintf(stdout, "probe %d: %d\n", i, probes[i]);
+    // }
+
+    //probe the index (phase 2)
+
+    int rangeIds[p];
+    int first, last, middle, pVal, curLevel, curFanout, prevLoc, range; 
+    int32_t * curArr;   
+
+    for(int i =0; i<p; i++){
+        pVal = probes[i];
+        curLevel = 0;
+        prevLoc = 0;
+        range = 0;
+        while(curLevel != levels -1 ){
+            curFanout = fanout[curLevel];
+            curArr = (int32_t *)tree[curLevel];
+            first = prevLoc * (curFanout-1);
+            last = first + curFanout - 2;
+            middle = (first + last)/2;
+
+            while (first < last){
+                if (pVal <= curArr[middle])
+                    last = middle - 1;
+                else
+                    first = middle + 1;
+                middle = (first + last)/2;
+            }
+            if (pVal <= curArr[middle]){
+                range += middle;
+                prevLoc = middle + (middle/(curFanout-1));
+            }
+            else{
+                prevLoc = middle + (middle/(curFanout-1)) + 1;
+                range += middle + 1;
+            }
+            curLevel ++;
         }
-        fprintf(stdout, "\n");
+        curFanout = fanout[curLevel];
+        curArr = (int32_t *)tree[curLevel];
+        first = prevLoc * (curFanout-1);
+        last = first + curFanout - 2;
+        middle = (first + last)/2;
+        while (first < last){
+            if (pVal <= curArr[middle])
+                last = middle - 1;
+            else
+                first = middle + 1;
+            middle = (first + last)/2;
+        }    
+        if(pVal<=curArr[middle]){
+            range += middle;
+            rangeIds[i] = range;
+        }
+        else {
+            range += middle + 1;
+            rangeIds[i] = range;
+        }  
     }
 
-    //probe the index    
-    int position = 0;
-    for(counter = 0 ; counter < p ; counter++){
-        counter3 = 0;
-        position = 0;
-        if(probes[counter] <= ((int32_t *)tree[levels - 1])[0]){
-            fprintf(stdout , "probe %d : [%d , %d]\n",counter + 1 , INT_MIN,((int32_t *)tree[levels - 1])[0]);
-            continue;
-        }
-        if(probes[counter] > delimiters[k - 1]){
-            fprintf(stdout, "probe %d : [%d , %d]\n" ,counter + 1 , delimiters[k - 1], MAX_INT);
-            continue;
-        }
-        for(counter2 = 0 ; counter2 < levels ; counter2++){
-            for (counter2 = 0 ; counter2 < levels ; counter2++){
-                for(counter3 = position * (fanout[counter2] - 1); counter3 < (position + 1) * (fanout[counter2] - 1) ; counter3++){
-                    if(counter3 > levelCounter[counter2] - 1 ){
-                        break;
-                    }
-                    if(probes[counter] <= ((int32_t *)tree[counter2])[counter3]){
-                        position = counter3;
-                        break;
-                    }
-                    else{
-                        position = counter3 + 1;
-                    }
-                }
-                    
-            }
-            fprintf(stdout , "probe %d : [%d , %d]\n",counter + 1 , ((int32_t *)tree[levels - 1])[counter3 - 1],((int32_t *)tree[levels - 1])[counter3]);
-        }
+    //phase 3, write to stdout
+    for (int i=0; i<p; i++){
+        fprintf(stdout, "%d %d\n", i, rangeIds[i]);
     }
+
     return 0;
     
 }
