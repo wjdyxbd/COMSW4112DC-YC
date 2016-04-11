@@ -113,8 +113,6 @@ int main(int argc, const char* argv[]) {
 
     // Check for proper argument count
     if (argc < 4){
-        printf("Error 1 : Incorrect Argument Count\n");
-        printf("Proper Usage: ./build K P { fanout list }\n");
         fprintf(stderr , "Error 1 : Incorect Argument Count\n");
         fprintf(stderr, "Proper Usage: ./build K P { fanout list }\n");
         exit(0);
