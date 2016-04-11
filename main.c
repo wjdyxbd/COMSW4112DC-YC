@@ -1,10 +1,10 @@
 //
 //  main.c
-//  W4112P2Step1
+//  W4112 Project 2
+//  Yihe Chen yc3075
+//  David Chen dhc2129
 //
-//  Created by chen on 16/4/3.
-//  Copyright © 2016年 Yihe. All rights reserved.
-//
+
 #include <stdio.h>
 #include <time.h>
 #include "p2random2.c"
@@ -18,7 +18,8 @@ int main(int argc, const char * argv[]) {
     size_t counter3 = 0;
     // check arguement numbers
     if (argc < 4){
-        printf("Error 1 : not enough arguments\n");
+        printf("Error 1 : Incorrect Argument Count\n");
+        printf("Proper Usage: ./build K P { fanout list }\n");
         exit(0);
     }
     // record value from command line

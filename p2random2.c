@@ -95,18 +95,18 @@ int32_t *generate_sorted_unique(size_t n, rand32_t *gen)
 	return (int32_t*) a;
 }
 
-void ratio_per_bit(const int32_t *a, size_t n)
-{
-	size_t i, j, *c = calloc(32, sizeof(size_t));
-	for (i = 0 ; i != n ; ++i) {
-		int32_t x = a[i];
-		for (j = 0 ; j != 32 ; ++j)
-			c[j] += (a[i] >> j) & 1;
-	}
-	for (j = 0 ; j != 32 ; ++j)
-		fprintf(stderr, "%2ld: %.2f%%\n", j + 1, c[j] * 100.0 / n);
-	free(c);
-}
+// void ratio_per_bit(const int32_t *a, size_t n)
+// {
+// 	size_t i, j, *c = calloc(32, sizeof(size_t));
+// 	for (i = 0 ; i != n ; ++i) {
+// 		int32_t x = a[i];
+// 		for (j = 0 ; j != 32 ; ++j)
+// 			c[j] += (a[i] >> j) & 1;
+// 	}
+// 	for (j = 0 ; j != 32 ; ++j)
+// 		fprintf(stderr, "%2ld: %.2f%%\n", j + 1, c[j] * 100.0 / n);
+// 	free(c);
+// }
 
 //int main(int argc, char **argv)
 //{
